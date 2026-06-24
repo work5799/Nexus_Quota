@@ -12,13 +12,15 @@ export default async function handler(req, res) {
     const password = 'Rayhan5799@#'
     
     // Check if admin already exists
-    const { data: existingAdmin } = await supabase
+    const { data: existingAdmin, error: fetchError } = await supabase
       .from('users')
       .select('*')
       .eq('email', email)
-      .single()
+      .limit(1)
 
-    if (existingAdmin) {
+    if (fetchError) throw fetchError
+
+    if (existingAdmin && existingAdmin.length > 0) {
       return res.json({ message: 'Super admin already exists!' })
     }
     

@@ -18,13 +18,18 @@ export default async function handler(req, res) {
       .from('users')
       .select('*')
       .eq('email', email)
-      .single()
+      .limit(1)
 
-    if (fetchError || !users) {
+    if (fetchError) {
+      console.error(fetchError)
       return res.status(401).json({ error: 'Invalid credentials' })
     }
 
-    const user = users
+    if (!users || users.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' })
+    }
+
+    const user = users[0]
 
     // Check if user is approved
     if (!user.is_approved) {

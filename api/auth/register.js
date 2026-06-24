@@ -18,14 +18,16 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Passwords do not match' })
     }
 
-    // Check if user exists
-    const { data: existingUsers } = await supabase
+    // Check if user exists (using limit 1 instead of single to avoid error)
+    const { data: existingUsers, error: fetchError } = await supabase
       .from('users')
       .select('*')
       .eq('email', email)
-      .single()
+      .limit(1)
 
-    if (existingUsers) {
+    if (fetchError) throw fetchError
+
+    if (existingUsers && existingUsers.length > 0) {
       return res.status(400).json({ error: 'Email already exists' })
     }
 
