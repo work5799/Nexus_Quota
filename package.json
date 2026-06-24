@@ -2,7 +2,6 @@
   "name": "nexusquota",
   "version": "1.0.0",
   "description": "Your AI Quota Command Center",
-  "type": "module",
   "scripts": {
     "install-all": "cd server && npm install && cd ../client && npm install",
     "dev": "concurrently \"npm run server\" \"npm run client\"",

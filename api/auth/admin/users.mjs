@@ -1,5 +1,5 @@
-import { auth } from '../../../_lib/auth.js'
-import supabase from '../../../_lib/supabase.js'
+import { auth } from '../../../_lib/auth.mjs'
+import supabase from '../../../_lib/supabase.mjs'
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {

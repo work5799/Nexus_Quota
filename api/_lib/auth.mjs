@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import supabase from './supabase.js'
+import supabase from './supabase.mjs'
 
 export const auth = async (req) => {
   try {

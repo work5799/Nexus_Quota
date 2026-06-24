@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-import supabase from '../../_lib/supabase.js'
+import supabase from '../../_lib/supabase.mjs'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
