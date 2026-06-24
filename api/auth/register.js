@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-import crypto from 'crypto'
-import db from '../../api/_lib/db.js'
+import supabase from '../../_lib/supabase.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -19,23 +18,33 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Passwords do not match' })
     }
 
-    const existingUser = db.prepare('SELECT * FROM users WHERE email = ?').get(email)
-    if (existingUser) {
+    // Check if user exists
+    const { data: existingUsers } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single()
+
+    if (existingUsers) {
       return res.status(400).json({ error: 'Email already exists' })
     }
 
     const hashedPassword = await bcrypt.hash(password, 12)
-    const userId = crypto.randomUUID()
 
-    db.prepare('INSERT INTO users (id, name, email, password, role, is_approved) VALUES (?, ?, ?, ?, ?, ?)').run(
-      userId, name, email, hashedPassword, 'user', 0
-    )
+    // Create user
+    const { data: newUser, error: insertError } = await supabase
+      .from('users')
+      .insert([{ name, email, password: hashedPassword, role: 'user', is_approved: false }])
+      .select()
+      .single()
 
-    const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' })
+    if (insertError) throw insertError
+
+    const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
     res.status(201).json({
       token,
-      user: { id: userId, name, email, role: 'user', isApproved: false }
+      user: { id: newUser.id, name, email, role: 'user', isApproved: false }
     })
   } catch (error) {
     console.error(error)

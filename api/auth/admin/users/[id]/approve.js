@@ -1,5 +1,5 @@
-import { auth } from '../../../../api/_lib/auth.js'
-import db from '../../../../api/_lib/db.js'
+import { auth } from '../../../../_lib/auth.js'
+import supabase from '../../../../_lib/supabase.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'PUT') {
@@ -16,9 +16,20 @@ export default async function handler(req, res) {
   }
 
   const { id } = req.query
-  db.prepare('UPDATE users SET is_approved = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(id)
   
-  const updatedUser = db.prepare('SELECT id, name, email, role, is_approved FROM users WHERE id = ?').get(id)
+  // Update user
+  await supabase
+    .from('users')
+    .update({ is_approved: true, updated_at: new Date().toISOString() })
+    .eq('id', id)
+
+  // Fetch updated user
+  const { data: updatedUser } = await supabase
+    .from('users')
+    .select('id, name, email, role, is_approved')
+    .eq('id', id)
+    .single()
+
   res.json({
     user: {
       ...updatedUser,

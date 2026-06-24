@@ -1,6 +1,5 @@
 import bcrypt from 'bcryptjs'
-import crypto from 'crypto'
-import db from './_lib/db.js'
+import supabase from './_lib/supabase.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -12,18 +11,23 @@ export default async function handler(req, res) {
     const email = 'rayhan5799@gmail.com'
     const password = 'Rayhan5799@#'
     
-    const existingAdmin = db.prepare('SELECT * FROM users WHERE email = ?').get(email)
+    // Check if admin already exists
+    const { data: existingAdmin } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single()
+
     if (existingAdmin) {
       return res.json({ message: 'Super admin already exists!' })
     }
     
     const hashedPassword = await bcrypt.hash(password, 12)
-    const userId = crypto.randomUUID()
     
-    db.prepare(`
-      INSERT INTO users (id, name, email, password, role, is_approved)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).run(userId, name, email, hashedPassword, 'superadmin', 1)
+    // Create admin
+    await supabase
+      .from('users')
+      .insert([{ name, email, password: hashedPassword, role: 'superadmin', is_approved: true }])
     
     res.json({ message: 'Super admin created successfully!' })
   } catch (error) {

@@ -1,5 +1,5 @@
-import { auth } from '../../../api/_lib/auth.js'
-import db from '../../../api/_lib/db.js'
+import { auth } from '../../../_lib/auth.js'
+import supabase from '../../../_lib/supabase.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -15,7 +15,10 @@ export default async function handler(req, res) {
     return res.status(403).json({ error: 'Access denied' })
   }
 
-  const users = db.prepare('SELECT id, name, email, role, is_approved, created_at FROM users').all()
+  const { data: users } = await supabase
+    .from('users')
+    .select('id, name, email, role, is_approved, created_at')
+
   res.json({
     users: users.map(u => ({
       ...u,

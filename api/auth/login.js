@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-import db from '../../api/_lib/db.js'
+import supabase from '../../_lib/supabase.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -14,10 +14,17 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'All fields are required' })
     }
 
-    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email)
-    if (!user) {
+    const { data: users, error: fetchError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single()
+
+    if (fetchError || !users) {
       return res.status(401).json({ error: 'Invalid credentials' })
     }
+
+    const user = users
 
     // Check if user is approved
     if (!user.is_approved) {

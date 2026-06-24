@@ -4,6 +4,8 @@ CREATE TABLE users (
   name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
   password TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'user',
+  is_approved BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
