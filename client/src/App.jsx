@@ -24,8 +24,17 @@ function App() {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
       axios.get('/auth/me')
-        .then(res => setUser(res.data.user))
-        .catch(() => localStorage.removeItem('token'))
+        .then(res => {
+          if (res.data && res.data.user) {
+            setUser(res.data.user)
+          } else {
+            localStorage.removeItem('token')
+          }
+        })
+        .catch((err) => {
+          console.error('Auth check failed:', err)
+          localStorage.removeItem('token')
+        })
         .finally(() => setLoading(false))
     } else {
       setLoading(false)

@@ -13,9 +13,15 @@ const Login = ({ onLogin }) => {
     setLoading(true)
     try {
       const res = await axios.post('/auth/login', { email, password })
-      onLogin(res.data)
+      if (res.data && res.data.token && res.data.user) {
+        onLogin(res.data)
+      } else {
+        toast.error('Invalid response from server')
+      }
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Login failed')
+      console.error('Login error:', err)
+      const errorMsg = err.response?.data?.error || err.message || 'Login failed'
+      toast.error(errorMsg)
     } finally {
       setLoading(false)
     }
