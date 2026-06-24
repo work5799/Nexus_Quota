@@ -9,7 +9,7 @@ import Dashboard from './pages/Dashboard'
 import Antigravity from './pages/Antigravity'
 import Settings from './pages/Settings'
 
-axios.defaults.baseURL = 'http://localhost:5000/api'
+axios.defaults.baseURL = '/api'
 
 function App() {
   const [user, setUser] = useState(null)
