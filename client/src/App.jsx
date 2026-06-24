@@ -9,7 +9,10 @@ import Dashboard from './pages/Dashboard'
 import Antigravity from './pages/Antigravity'
 import Settings from './pages/Settings'
 
-axios.defaults.baseURL = '/api'
+// Use localhost backend in development, and relative path for production
+axios.defaults.baseURL = import.meta.env.DEV 
+  ? 'http://localhost:5000/api' 
+  : '/api'
 
 function App() {
   const [user, setUser] = useState(null)
