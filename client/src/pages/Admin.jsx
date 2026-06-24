@@ -43,7 +43,7 @@ const Admin = ({ user, onLogout }) => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar onLogout={onLogout} />
+      <Sidebar onLogout={onLogout} user={user} />
       <div className="ml-64 p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-text mb-2">Admin Panel</h1>
