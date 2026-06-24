@@ -11,6 +11,12 @@ export default async function handler(req, res) {
   }
 
   res.json({
-    user: { id: user.id, name: user.name, email: user.email }
+    user: { 
+      id: user.id, 
+      name: user.name, 
+      email: user.email, 
+      role: user.role, 
+      isApproved: Boolean(user.is_approved) 
+    }
   })
 }

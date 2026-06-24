@@ -19,6 +19,11 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Invalid credentials' })
     }
 
+    // Check if user is approved
+    if (!user.is_approved) {
+      return res.status(403).json({ error: 'Account not approved yet. Please wait for admin approval.' })
+    }
+
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid credentials' })
@@ -28,7 +33,13 @@ export default async function handler(req, res) {
 
     res.json({
       token,
-      user: { id: user.id, name: user.name, email: user.email }
+      user: { 
+        id: user.id, 
+        name: user.name, 
+        email: user.email, 
+        role: user.role, 
+        isApproved: Boolean(user.is_approved) 
+      }
     })
   } catch (error) {
     console.error(error)

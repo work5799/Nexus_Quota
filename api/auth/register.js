@@ -27,15 +27,15 @@ export default async function handler(req, res) {
     const hashedPassword = await bcrypt.hash(password, 12)
     const userId = crypto.randomUUID()
 
-    db.prepare('INSERT INTO users (id, name, email, password) VALUES (?, ?, ?, ?)').run(
-      userId, name, email, hashedPassword
+    db.prepare('INSERT INTO users (id, name, email, password, role, is_approved) VALUES (?, ?, ?, ?, ?, ?)').run(
+      userId, name, email, hashedPassword, 'user', 0
     )
 
     const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
     res.status(201).json({
       token,
-      user: { id: userId, name, email }
+      user: { id: userId, name, email, role: 'user', isApproved: false }
     })
   } catch (error) {
     console.error(error)
