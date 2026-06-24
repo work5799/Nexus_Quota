@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 
-const Sidebar = ({ onLogout }) => {
+const Sidebar = ({ onLogout, user }) => {
   const location = useLocation()
 
   const navItems = [
@@ -8,6 +8,10 @@ const Sidebar = ({ onLogout }) => {
     { path: '/antigravity', label: 'Antigravity', icon: '⚡' },
     { path: '/settings', label: 'Settings', icon: '⚙️' },
   ]
+
+  if (user?.role === 'superadmin') {
+    navItems.push({ path: '/admin', label: 'Admin Panel', icon: '🔐' })
+  }
 
   return (
     <div className="w-64 bg-card border-r border-border h-screen fixed left-0 top-0 p-6">

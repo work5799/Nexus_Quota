@@ -11,6 +11,8 @@ db.exec(`
     name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'user',
+    is_approved INTEGER NOT NULL DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
@@ -30,5 +32,17 @@ db.exec(`
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
 `);
+
+// Add new columns if they don't exist (for existing databases)
+const userColumns = db.prepare("PRAGMA table_info(users)").all();
+const hasRole = userColumns.some(col => col.name === 'role');
+const hasIsApproved = userColumns.some(col => col.name === 'is_approved');
+
+if (!hasRole) {
+  db.exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'");
+}
+if (!hasIsApproved) {
+  db.exec("ALTER TABLE users ADD COLUMN is_approved INTEGER NOT NULL DEFAULT 0");
+}
 
 module.exports = db;

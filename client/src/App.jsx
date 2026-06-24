@@ -8,6 +8,7 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Antigravity from './pages/Antigravity'
 import Settings from './pages/Settings'
+import Admin from './pages/Admin'
 
 // Use localhost backend in development, and relative path for production
 axios.defaults.baseURL = import.meta.env.DEV 
@@ -62,6 +63,7 @@ function App() {
         <Route path="/dashboard" element={user ? <Dashboard user={user} onLogout={handleLogout} /> : <Navigate to="/login" />} />
         <Route path="/antigravity" element={user ? <Antigravity user={user} onLogout={handleLogout} /> : <Navigate to="/login" />} />
         <Route path="/settings" element={user ? <Settings user={user} setUser={setUser} onLogout={handleLogout} /> : <Navigate to="/login" />} />
+        <Route path="/admin" element={user?.role === 'superadmin' ? <Admin user={user} onLogout={handleLogout} /> : <Navigate to="/dashboard" />} />
       </Routes>
     </BrowserRouter>
   )

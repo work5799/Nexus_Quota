@@ -107,7 +107,7 @@ const Antigravity = ({ user, onLogout }) => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar onLogout={onLogout} />
+      <Sidebar onLogout={onLogout} user={user} />
       <div className="ml-64 p-8">
         <div className="flex items-center justify-between mb-8">
           <div>
