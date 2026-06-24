@@ -21,24 +21,32 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem('token')
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-      axios.get('/auth/me')
-        .then(res => {
-          if (res.data && res.data.user) {
-            setUser(res.data.user)
-          } else {
-            localStorage.removeItem('token')
-          }
-        })
-        .catch((err) => {
-          console.error('Auth check failed:', err)
-          localStorage.removeItem('token')
-        })
-        .finally(() => setLoading(false))
-    } else {
+    if (!token) {
       setLoading(false)
+      return
     }
+
+    const checkAuth = async () => {
+      try {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+        const response = await axios.get('/auth/me', { timeout: 10000 })
+        
+        if (response.data && response.data.user) {
+          setUser(response.data.user)
+        } else {
+          localStorage.removeItem('token')
+          delete axios.defaults.headers.common['Authorization']
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error)
+        localStorage.removeItem('token')
+        delete axios.defaults.headers.common['Authorization']
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    checkAuth()
   }, [])
 
   const handleLogin = (data) => {

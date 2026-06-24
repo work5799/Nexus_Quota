@@ -34,6 +34,6 @@ export default async function handler(req, res) {
     res.json({ message: 'Super admin created successfully!' })
   } catch (error) {
     console.error('❌ Error creating admin:', error)
-    res.status(500).json({ error: 'Server error' })
+    res.status(500).json({ error: 'Server error', details: error.message })
   }
 }
